@@ -1,0 +1,2129 @@
+{
+	"info": {
+		"_postman_id": "voteapi-comprehensive-2024",
+		"name": "VoteAPI Comprehensive Collection",
+		"description": "Complete API collection for VoteAPI - Enterprise Voting & Polling System\n\nBase URL: http://localhost:57788\n\nIncludes all endpoints for:\n- Authentication\n- Elections\n- Voting\n- Polls\n- Users\n- Admin\n- Analytics\n- Notifications\n- Bulk Operations\n- Export",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:57788",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "electionId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "positionId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "candidateId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "voterId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "pollId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "schoolId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "associationId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "🔐 Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.user) {",
+									"        pm.collectionVariables.set('userId', response.data.user._id);",
+									"    }",
+									"    if (response.data && response.data.tokens) {",
+									"        pm.collectionVariables.set('accessToken', response.data.tokens.accessToken);",
+									"        pm.collectionVariables.set('refreshToken', response.data.tokens.refreshToken);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"Password123!\",\n    \"firstname\": \"John\",\n    \"lastname\": \"Doe\",\n    \"phone\": \"+1234567890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "register"]
+						},
+						"description": "Register a new user account"
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.tokens) {",
+									"        pm.collectionVariables.set('accessToken', response.data.tokens.accessToken);",
+									"        pm.collectionVariables.set('refreshToken', response.data.tokens.refreshToken);",
+									"    }",
+									"    if (response.data && response.data.user) {",
+									"        pm.collectionVariables.set('userId', response.data.user._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@voteapi.com\",\n    \"password\": \"SuperAdmin123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Login with email and password"
+					}
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.accessToken) {",
+									"        pm.collectionVariables.set('accessToken', response.data.accessToken);",
+									"    }",
+									"    if (response.data && response.data.refreshToken) {",
+									"        pm.collectionVariables.set('refreshToken', response.data.refreshToken);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refreshToken\": \"{{refreshToken}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/refresh",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "refresh"]
+						},
+						"description": "Refresh access token using refresh token"
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "logout"]
+						},
+						"description": "Logout current user and blacklist token"
+					}
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/password/forgot",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "password", "forgot"]
+						},
+						"description": "Request password reset email"
+					}
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"reset-token-from-email\",\n    \"password\": \"NewPassword123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/password/reset",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "password", "reset"]
+						},
+						"description": "Reset password with token"
+					}
+				}
+			]
+		},
+		{
+			"name": "👤 Users",
+			"item": [
+				{
+					"name": "Get My Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "me"]
+						}
+					}
+				},
+				{
+					"name": "Update My Profile",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstname\": \"John\",\n    \"lastname\": \"Updated\",\n    \"phone\": \"+1987654321\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "me"]
+						}
+					}
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"currentPassword\": \"CurrentPassword123!\",\n    \"newPassword\": \"NewPassword123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/me/password",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "me", "password"]
+						}
+					}
+				},
+				{
+					"name": "Get Notification Preferences",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/me/notification-preferences",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "me", "notification-preferences"]
+						}
+					}
+				},
+				{
+					"name": "Update Notification Preferences",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": {\n        \"enabled\": true,\n        \"types\": [\"VOTE_CONFIRMATION\", \"ELECTION_RESULTS\", \"POLL_RESULTS\"]\n    },\n    \"push\": {\n        \"enabled\": false\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/me/notification-preferences",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "me", "notification-preferences"]
+						}
+					}
+				},
+				{
+					"name": "Get All Users (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users?page=1&limit=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users"],
+							"query": [
+								{"key": "page", "value": "1"},
+								{"key": "limit", "value": "20"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get User by ID (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "{{userId}}"]
+						}
+					}
+				},
+				{
+					"name": "Create User (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"newuser@example.com\",\n    \"password\": \"Password123!\",\n    \"firstname\": \"New\",\n    \"lastname\": \"User\",\n    \"phone\": \"+1234567890\",\n    \"role\": \"ELECTION_OFFICER\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users"]
+						}
+					}
+				},
+				{
+					"name": "Update User (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstname\": \"Updated\",\n    \"lastname\": \"Name\",\n    \"status\": \"ACTIVE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "{{userId}}"]
+						}
+					}
+				},
+				{
+					"name": "Update User Role (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"role\": \"ADMIN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{userId}}/role",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "{{userId}}", "role"]
+						}
+					}
+				},
+				{
+					"name": "Get User Activity (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{userId}}/activity",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "{{userId}}", "activity"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🏫 Schools",
+			"item": [
+				{
+					"name": "Create School",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data._id) {",
+									"        pm.collectionVariables.set('schoolId', response.data._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Example University\",\n    \"code\": \"EXUNI\",\n    \"type\": \"UNIVERSITY\",\n    \"address\": {\n        \"street\": \"123 University Ave\",\n        \"city\": \"Education City\",\n        \"state\": \"EC\",\n        \"country\": \"United States\",\n        \"postalCode\": \"12345\"\n    },\n    \"contact\": {\n        \"email\": \"admin@exampleuni.edu\",\n        \"phone\": \"+1234567890\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/schools",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "schools"]
+						}
+					}
+				},
+				{
+					"name": "Get All Schools",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/schools?page=1&limit=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "schools"],
+							"query": [
+								{"key": "page", "value": "1"},
+								{"key": "limit", "value": "20"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get School by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/schools/{{schoolId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "schools", "{{schoolId}}"]
+						}
+					}
+				},
+				{
+					"name": "Update School",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Example University Updated\",\n    \"contact\": {\n        \"email\": \"newadmin@exampleuni.edu\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/schools/{{schoolId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "schools", "{{schoolId}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete School",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/schools/{{schoolId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "schools", "{{schoolId}}"]
+						}
+					}
+				},
+				{
+					"name": "Verify School",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/schools/{{schoolId}}/verify",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "schools", "{{schoolId}}", "verify"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🤝 Associations",
+			"item": [
+				{
+					"name": "Create Association",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data._id) {",
+									"        pm.collectionVariables.set('associationId', response.data._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Student Government Association\",\n    \"code\": \"SGA\",\n    \"type\": \"STUDENT\",\n    \"description\": \"Official student government body\",\n    \"contact\": {\n        \"email\": \"sga@example.com\",\n        \"phone\": \"+1234567890\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/associations",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "associations"]
+						}
+					}
+				},
+				{
+					"name": "Get All Associations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/associations",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "associations"]
+						}
+					}
+				},
+				{
+					"name": "Get Association by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/associations/{{associationId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "associations", "{{associationId}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Association",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Association Name\",\n    \"description\": \"Updated description\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/associations/{{associationId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "associations", "{{associationId}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete Association",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/associations/{{associationId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "associations", "{{associationId}}"]
+						}
+					}
+				},
+				{
+					"name": "Verify Association",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/associations/{{associationId}}/verify",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "associations", "{{associationId}}", "verify"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🗳️ Elections",
+			"item": [
+				{
+					"name": "Create Election",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data._id) {",
+									"        pm.collectionVariables.set('electionId', response.data._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Student Council Elections 2025\",\n    \"description\": \"Annual student council elections\",\n    \"type\": \"SCHOOL\",\n    \"schoolId\": \"{{schoolId}}\",\n    \"startDateTime\": \"2025-03-15T08:00:00Z\",\n    \"endDateTime\": \"2025-03-17T18:00:00Z\",\n    \"registrationDeadline\": \"2025-03-10T23:59:59Z\",\n    \"nominationDeadline\": \"2025-03-12T23:59:59Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/elections",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "elections"]
+						}
+					}
+				},
+				{
+					"name": "Get My Elections",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/elections/my-elections",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "elections", "my-elections"]
+						}
+					}
+				},
+				{
+					"name": "Search Elections",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/elections/search?q=student&status=SETUP",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "elections", "search"],
+							"query": [
+								{"key": "q", "value": "student"},
+								{"key": "status", "value": "SETUP"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Election by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/elections/{{electionId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "elections", "{{electionId}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Election",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Updated Election Title\",\n    \"description\": \"Updated description\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/elections/{{electionId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "elections", "{{electionId}}"]
+						}
+					}
+				},
+				{
+					"name": "Advance Election Phase",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/elections/{{electionId}}/advance-phase",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "elections", "{{electionId}}", "advance-phase"]
+						}
+					}
+				},
+				{
+					"name": "Start Voting",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/elections/{{electionId}}/start-voting",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "elections", "{{electionId}}", "start-voting"]
+						}
+					}
+				},
+				{
+					"name": "Close Voting",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/elections/{{electionId}}/close-voting",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "elections", "{{electionId}}", "close-voting"]
+						}
+					}
+				},
+				{
+					"name": "Complete Election",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/elections/{{electionId}}/complete",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "elections", "{{electionId}}", "complete"]
+						}
+					}
+				},
+				{
+					"name": "Send Provisional Results",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/elections/{{electionId}}/send-provisional-results",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "elections", "{{electionId}}", "send-provisional-results"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📋 Positions",
+			"item": [
+				{
+					"name": "Create Position",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data._id) {",
+									"        pm.collectionVariables.set('positionId', response.data._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"President\",\n    \"description\": \"Student Council President\",\n    \"maxCandidates\": 10,\n    \"maxWinners\": 1,\n    \"votingMethod\": \"SINGLE_CHOICE\",\n    \"order\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/positions/elections/{{electionId}}/positions",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "positions", "elections", "{{electionId}}", "positions"]
+						}
+					}
+				},
+				{
+					"name": "Get Election Positions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/positions/elections/{{electionId}}/positions",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "positions", "elections", "{{electionId}}", "positions"]
+						}
+					}
+				},
+				{
+					"name": "Update Position",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Vice President\",\n    \"description\": \"Updated description\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/positions/positions/{{positionId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "positions", "positions", "{{positionId}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete Position",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/positions/positions/{{positionId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "positions", "positions", "{{positionId}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "👥 Candidates",
+			"item": [
+				{
+					"name": "Add Candidate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data._id) {",
+									"        pm.collectionVariables.set('candidateId', response.data._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"voterId\": \"{{voterId}}\",\n    \"manifesto\": \"My campaign promises and goals...\",\n    \"qualifications\": \"Previous experience and qualifications...\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/candidates/elections/{{electionId}}/positions/{{positionId}}/candidates",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "candidates", "elections", "{{electionId}}", "positions", "{{positionId}}", "candidates"]
+						}
+					}
+				},
+				{
+					"name": "Get Position Candidates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/candidates/elections/{{electionId}}/positions/{{positionId}}/candidates",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "candidates", "elections", "{{electionId}}", "positions", "{{positionId}}", "candidates"]
+						}
+					}
+				},
+				{
+					"name": "Get Election Candidates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/candidates/elections/{{electionId}}/candidates",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "candidates", "elections", "{{electionId}}", "candidates"]
+						}
+					}
+				},
+				{
+					"name": "Remove Candidate",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/candidates/candidates/{{candidateId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "candidates", "candidates", "{{candidateId}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🗳️ Voting",
+			"item": [
+				{
+					"name": "Validate Secret Code",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"electionId\": \"{{electionId}}\",\n    \"secretCode\": \"ABC123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/votes/validate",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "votes", "validate"]
+						}
+					}
+				},
+				{
+					"name": "Submit Vote",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"electionId\": \"{{electionId}}\",\n    \"positionId\": \"{{positionId}}\",\n    \"candidateId\": \"{{candidateId}}\",\n    \"voterId\": \"{{voterId}}\",\n    \"secretCode\": \"ABC123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/votes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "votes"]
+						}
+					}
+				},
+				{
+					"name": "Get Votes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/votes?electionId={{electionId}}&page=1&limit=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "votes"],
+							"query": [
+								{"key": "electionId", "value": "{{electionId}}"},
+								{"key": "page", "value": "1"},
+								{"key": "limit", "value": "20"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Vote by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/votes/vote-id-here",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "votes", "vote-id-here"]
+						}
+					}
+				},
+				{
+					"name": "Verify Vote",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"method\": \"MANUAL\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/votes/vote-id-here/verify",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "votes", "vote-id-here", "verify"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📊 Results",
+			"item": [
+				{
+					"name": "Get Election Results",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/results/election/{{electionId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "results", "election", "{{electionId}}"]
+						}
+					}
+				},
+				{
+					"name": "Calculate Results",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"electionId\": \"{{electionId}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/results/calculate",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "results", "calculate"]
+						}
+					}
+				},
+				{
+					"name": "Verify Results",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/results/verify?electionId={{electionId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "results", "verify"],
+							"query": [
+								{"key": "electionId", "value": "{{electionId}}"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Export Results",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/results/export?electionId={{electionId}}&format=csv",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "results", "export"],
+							"query": [
+								{"key": "electionId", "value": "{{electionId}}"},
+								{"key": "format", "value": "csv"}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🎯 Polls",
+			"item": [
+				{
+					"name": "Create Rating Poll",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data._id) {",
+									"        pm.collectionVariables.set('pollId', response.data._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Rate Our New Product\",\n    \"description\": \"Please rate our new smartphone\",\n    \"pollType\": \"RATING\",\n    \"category\": \"DEVICE\",\n    \"subject\": {\n        \"name\": \"SuperPhone X\",\n        \"description\": \"Latest flagship smartphone\",\n        \"website\": \"https://example.com/superphone\"\n    },\n    \"ratingOptions\": {\n        \"type\": \"STARS\",\n        \"minValue\": 1,\n        \"maxValue\": 5\n    },\n    \"startDate\": \"2025-01-01T00:00:00Z\",\n    \"endDate\": \"2025-12-31T23:59:59Z\",\n    \"visibility\": \"PUBLIC\",\n    \"tags\": [\"technology\", \"smartphone\", \"review\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/polls",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "polls"]
+						}
+					}
+				},
+				{
+					"name": "Create Comparison Poll",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Best Pizza Place\",\n    \"description\": \"Vote for the best pizza restaurant\",\n    \"pollType\": \"COMPARISON\",\n    \"category\": \"FOOD\",\n    \"options\": [\n        {\n            \"name\": \"Pizza Hut\",\n            \"description\": \"Classic chain restaurant\"\n        },\n        {\n            \"name\": \"Domino's\",\n            \"description\": \"Fast delivery pizza\"\n        },\n        {\n            \"name\": \"Local Pizzeria\",\n            \"description\": \"Family owned restaurant\"\n        }\n    ],\n    \"startDate\": \"2025-01-01T00:00:00Z\",\n    \"endDate\": \"2025-12-31T23:59:59Z\",\n    \"visibility\": \"PUBLIC\",\n    \"tags\": [\"food\", \"pizza\", \"restaurant\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/polls",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "polls"]
+						}
+					}
+				},
+				{
+					"name": "Get All Polls",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/polls?page=1&limit=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "polls"],
+							"query": [
+								{"key": "page", "value": "1"},
+								{"key": "limit", "value": "20"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Poll by ID",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/polls/{{pollId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "polls", "{{pollId}}"]
+						}
+					}
+				},
+				{
+					"name": "Vote on Rating Poll",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"rating\": 4,\n    \"comment\": \"Great product!\",\n    \"voterEmail\": \"voter@example.com\",\n    \"voterName\": \"Anonymous Voter\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/polls/{{pollId}}/vote",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "polls", "{{pollId}}", "vote"]
+						}
+					}
+				},
+				{
+					"name": "Vote on Comparison Poll",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"selectedOptionId\": \"option_1_xxx\",\n    \"comment\": \"Best pizza in town!\",\n    \"voterEmail\": \"voter@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/polls/{{pollId}}/vote",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "polls", "{{pollId}}", "vote"]
+						}
+					}
+				},
+				{
+					"name": "Get Poll Results",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/polls/{{pollId}}/results",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "polls", "{{pollId}}", "results"]
+						}
+					}
+				},
+				{
+					"name": "Update Poll",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Updated Poll Title\",\n    \"description\": \"Updated description\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/polls/{{pollId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "polls", "{{pollId}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete Poll",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/polls/{{pollId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "polls", "{{pollId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get My Polls",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/polls/my-polls",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "polls", "my-polls"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🔔 Notifications",
+			"item": [
+				{
+					"name": "Get Notifications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/notifications?page=1&limit=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "notifications"],
+							"query": [
+								{"key": "page", "value": "1"},
+								{"key": "limit", "value": "20"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Unread Count",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/notifications/unread-count",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "notifications", "unread-count"]
+						}
+					}
+				},
+				{
+					"name": "Mark as Read",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/notifications/notification-id-here/read",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "notifications", "notification-id-here", "read"]
+						}
+					}
+				},
+				{
+					"name": "Mark All as Read",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/notifications/read-all",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "notifications", "read-all"]
+						}
+					}
+				},
+				{
+					"name": "Delete Notification",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/notifications/notification-id-here",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "notifications", "notification-id-here"]
+						}
+					}
+				},
+				{
+					"name": "Create Notification (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"SYSTEM\",\n    \"title\": \"System Announcement\",\n    \"message\": \"Important system update notification\",\n    \"recipientId\": \"{{userId}}\",\n    \"channel\": \"EMAIL\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/notifications",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "notifications"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📈 Analytics",
+			"item": [
+				{
+					"name": "Admin - Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/analytics/admin/dashboard",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "analytics", "admin", "dashboard"]
+						}
+					}
+				},
+				{
+					"name": "Admin - API Usage",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/analytics/admin/api-usage?days=30",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "analytics", "admin", "api-usage"],
+							"query": [
+								{"key": "days", "value": "30"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Admin - Login Stats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/analytics/admin/login-stats?days=30",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "analytics", "admin", "login-stats"],
+							"query": [
+								{"key": "days", "value": "30"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Admin - Vote Analytics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/analytics/admin/vote-analytics?electionId={{electionId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "analytics", "admin", "vote-analytics"],
+							"query": [
+								{"key": "electionId", "value": "{{electionId}}"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Admin - User Behavior",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/analytics/admin/user-behavior?days=30",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "analytics", "admin", "user-behavior"],
+							"query": [
+								{"key": "days", "value": "30"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Admin - Poll Analytics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/analytics/admin/poll-analytics",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "analytics", "admin", "poll-analytics"]
+						}
+					}
+				},
+				{
+					"name": "User - Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/analytics/user/dashboard",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "analytics", "user", "dashboard"]
+						}
+					}
+				},
+				{
+					"name": "User - My Elections Analytics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/analytics/user/my-elections",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "analytics", "user", "my-elections"]
+						}
+					}
+				},
+				{
+					"name": "User - My Polls Analytics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/analytics/user/my-polls",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "analytics", "user", "my-polls"]
+						}
+					}
+				},
+				{
+					"name": "User - My Votes Analytics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/analytics/user/my-votes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "analytics", "user", "my-votes"]
+						}
+					}
+				},
+				{
+					"name": "User - Organization Analytics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/analytics/user/organization",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "analytics", "user", "organization"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "⚙️ Admin",
+			"item": [
+				{
+					"name": "Get Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/dashboard",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "dashboard"]
+						}
+					}
+				},
+				{
+					"name": "Get Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/statistics",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "statistics"]
+						}
+					}
+				},
+				{
+					"name": "Get All Elections",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/elections?page=1&limit=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "elections"],
+							"query": [
+								{"key": "page", "value": "1"},
+								{"key": "limit", "value": "20"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Activity Log",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/activity?page=1&limit=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "activity"],
+							"query": [
+								{"key": "page", "value": "1"},
+								{"key": "limit", "value": "20"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get All Schools",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/schools",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "schools"]
+						}
+					}
+				},
+				{
+					"name": "Get All Associations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/associations",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "associations"]
+						}
+					}
+				},
+				{
+					"name": "Get All Candidates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/candidates",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "candidates"]
+						}
+					}
+				},
+				{
+					"name": "Get All Voters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/voters",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "voters"]
+						}
+					}
+				},
+				{
+					"name": "Verify School",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/schools/{{schoolId}}/verify",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "schools", "{{schoolId}}", "verify"]
+						}
+					}
+				},
+				{
+					"name": "Verify Association",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/associations/{{associationId}}/verify",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "associations", "{{associationId}}", "verify"]
+						}
+					}
+				},
+				{
+					"name": "Approve Election",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/elections/{{electionId}}/approve",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "elections", "{{electionId}}", "approve"]
+						}
+					}
+				},
+				{
+					"name": "Suspend User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/users/{{userId}}/suspend",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "users", "{{userId}}", "suspend"]
+						}
+					}
+				},
+				{
+					"name": "Activate User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/users/{{userId}}/activate",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "users", "{{userId}}", "activate"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📦 Bulk Operations",
+			"item": [
+				{
+					"name": "Bulk Register Voters",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"voters\": [\n        {\n            \"email\": \"voter1@example.com\",\n            \"fullName\": \"Voter One\",\n            \"studentId\": \"STU001\"\n        },\n        {\n            \"email\": \"voter2@example.com\",\n            \"fullName\": \"Voter Two\",\n            \"studentId\": \"STU002\"\n        }\n    ],\n    \"schoolId\": \"{{schoolId}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/bulk/voters",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "bulk", "voters"]
+						}
+					}
+				},
+				{
+					"name": "Import Voters from CSV",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": ""
+								},
+								{
+									"key": "schoolId",
+									"value": "{{schoolId}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/bulk/voters/import",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "bulk", "voters", "import"]
+						}
+					}
+				},
+				{
+					"name": "Bulk Update Candidates",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"candidates\": [\n        {\n            \"id\": \"candidate-id-1\",\n            \"status\": \"APPROVED\"\n        },\n        {\n            \"id\": \"candidate-id-2\",\n            \"status\": \"APPROVED\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/bulk/candidates",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "bulk", "candidates"]
+						}
+					}
+				},
+				{
+					"name": "Bulk Update User Status",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userIds\": [\"user-id-1\", \"user-id-2\"],\n    \"status\": \"ACTIVE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/bulk/users/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "bulk", "users", "status"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📤 Export",
+			"item": [
+				{
+					"name": "Export Elections",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/export/elections?format=csv",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "export", "elections"],
+							"query": [
+								{"key": "format", "value": "csv"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Export Voters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/export/voters?schoolId={{schoolId}}&format=csv",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "export", "voters"],
+							"query": [
+								{"key": "schoolId", "value": "{{schoolId}}"},
+								{"key": "format", "value": "csv"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Export Candidates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/export/candidates?electionId={{electionId}}&format=csv",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "export", "candidates"],
+							"query": [
+								{"key": "electionId", "value": "{{electionId}}"},
+								{"key": "format", "value": "csv"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Export Polls",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/export/polls?format=csv",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "export", "polls"],
+							"query": [
+								{"key": "format", "value": "csv"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Export Users (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/export/users?format=csv",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "export", "users"],
+							"query": [
+								{"key": "format", "value": "csv"}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🔍 Audit",
+			"item": [
+				{
+					"name": "Get Audit Logs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/audit?page=1&limit=50",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "audit"],
+							"query": [
+								{"key": "page", "value": "1"},
+								{"key": "limit", "value": "50"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Security Events",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/audit/security",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "audit", "security"]
+						}
+					}
+				},
+				{
+					"name": "Search Audit Logs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/audit/search?action=LOGIN&startDate=2025-01-01",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "audit", "search"],
+							"query": [
+								{"key": "action", "value": "LOGIN"},
+								{"key": "startDate", "value": "2025-01-01"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get User Audit Logs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/audit/user/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "audit", "user", "{{userId}}"]
+						}
+					}
+				},
+				{
+					"name": "Export Audit Logs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/audit/export?format=csv",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "audit", "export"],
+							"query": [
+								{"key": "format", "value": "csv"}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📁 Files",
+			"item": [
+				{
+					"name": "Upload Image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": ""
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/upload/image",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "upload", "image"]
+						}
+					}
+				},
+				{
+					"name": "Upload Document",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "document",
+									"type": "file",
+									"src": ""
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/upload/document",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "upload", "document"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🏥 Health Check",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						}
+					}
+				}
+			]
+		}
+	]
+}

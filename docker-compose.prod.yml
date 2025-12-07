@@ -1,0 +1,277 @@
+# ================================
+# VoteAPI Docker Compose - Production
+# ================================
+# Usage:
+#   docker-compose -f docker-compose.prod.yml up -d
+#   docker-compose -f docker-compose.prod.yml --env-file .env.production up -d
+# ================================
+
+services:
+  # ================================
+  # VoteAPI Application
+  # ================================
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: voteapi:production
+    container_name: voteapi-app-prod
+    restart: always
+    ports:
+      - "57788:57788"
+    env_file:
+      - .env.production
+    environment:
+      # Override specific settings for production
+      NODE_ENV: production
+      PORT: 57788
+      HOST: 0.0.0.0
+
+      # MongoDB (use replica set for production)
+      MONGODB_URI: mongodb://mongo-primary:27017,mongo-secondary:27017,mongo-arbiter:27017/voteapi?replicaSet=rs0
+
+      # Redis Cluster
+      REDIS_URL: redis://redis:6379
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_ENABLED: "true"
+
+      # Security - Override in .env.production
+      BCRYPT_ROUNDS: 14
+      TRUST_PROXY: 1
+
+      # Logging
+      LOG_LEVEL: info
+      DEBUG_MODE: "false"
+
+      # Swagger (disable in production or enable explicitly)
+      ENABLE_SWAGGER: "false"
+    volumes:
+      - voteapi-uploads-prod:/app/uploads
+      - voteapi-logs-prod:/app/logs
+    depends_on:
+      mongo-primary:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - voteapi-network-prod
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:57788/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2G
+        reservations:
+          cpus: "0.5"
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  # ================================
+  # MongoDB Primary (Replica Set)
+  # ================================
+  mongo-primary:
+    image: mongo:7
+    container_name: voteapi-mongo-primary
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: voteapi
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-adminpassword}
+    volumes:
+      - voteapi-mongo-primary-data:/data/db
+      - voteapi-mongo-primary-config:/data/configdb
+      - ./docker/mongo/init-replica.js:/docker-entrypoint-initdb.d/init-replica.js:ro
+    networks:
+      - voteapi-network-prod
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mongosh",
+          "-u",
+          "${MONGO_ROOT_USERNAME:-admin}",
+          "-p",
+          "${MONGO_ROOT_PASSWORD:-adminpassword}",
+          "--authenticationDatabase",
+          "admin",
+          "--eval",
+          "db.adminCommand('ping')",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command:
+      [
+        "mongod",
+        "--bind_ip_all",
+        "--replSet",
+        "rs0",
+        "--auth",
+        "--keyFile",
+        "/data/configdb/mongodb-keyfile",
+      ]
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4G
+
+  # ================================
+  # MongoDB Secondary
+  # ================================
+  mongo-secondary:
+    image: mongo:7
+    container_name: voteapi-mongo-secondary
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-adminpassword}
+    volumes:
+      - voteapi-mongo-secondary-data:/data/db
+      - voteapi-mongo-secondary-config:/data/configdb
+    networks:
+      - voteapi-network-prod
+    depends_on:
+      - mongo-primary
+    command:
+      [
+        "mongod",
+        "--bind_ip_all",
+        "--replSet",
+        "rs0",
+        "--auth",
+        "--keyFile",
+        "/data/configdb/mongodb-keyfile",
+      ]
+
+  # ================================
+  # MongoDB Arbiter
+  # ================================
+  mongo-arbiter:
+    image: mongo:7
+    container_name: voteapi-mongo-arbiter
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-adminpassword}
+    volumes:
+      - voteapi-mongo-arbiter-data:/data/db
+    networks:
+      - voteapi-network-prod
+    depends_on:
+      - mongo-primary
+    command:
+      [
+        "mongod",
+        "--bind_ip_all",
+        "--replSet",
+        "rs0",
+        "--auth",
+        "--keyFile",
+        "/data/configdb/mongodb-keyfile",
+      ]
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+
+  # ================================
+  # Redis with Persistence
+  # ================================
+  redis:
+    image: redis:7-alpine
+    container_name: voteapi-redis-prod
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - voteapi-redis-data-prod:/data
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      - voteapi-network-prod
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+
+  # ================================
+  # Nginx Reverse Proxy
+  # ================================
+  nginx:
+    image: nginx:alpine
+    container_name: voteapi-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/ssl:/etc/nginx/ssl:ro
+      - voteapi-nginx-logs:/var/log/nginx
+    depends_on:
+      - api
+    networks:
+      - voteapi-network-prod
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# ================================
+# Networks
+# ================================
+networks:
+  voteapi-network-prod:
+    driver: bridge
+    name: voteapi-network-prod
+
+# ================================
+# Volumes
+# ================================
+volumes:
+  voteapi-mongo-primary-data:
+    name: voteapi-mongo-primary-data
+  voteapi-mongo-primary-config:
+    name: voteapi-mongo-primary-config
+  voteapi-mongo-secondary-data:
+    name: voteapi-mongo-secondary-data
+  voteapi-mongo-secondary-config:
+    name: voteapi-mongo-secondary-config
+  voteapi-mongo-arbiter-data:
+    name: voteapi-mongo-arbiter-data
+  voteapi-redis-data-prod:
+    name: voteapi-redis-data-prod
+  voteapi-uploads-prod:
+    name: voteapi-uploads-prod
+  voteapi-logs-prod:
+    name: voteapi-logs-prod
+  voteapi-nginx-logs:
+    name: voteapi-nginx-logs

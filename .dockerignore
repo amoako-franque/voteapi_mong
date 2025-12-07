@@ -1,0 +1,82 @@
+# ================================
+# VoteAPI Docker Ignore
+# ================================
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+.pnpm-debug.log
+
+# Environment files (use docker-compose environment instead)
+.env
+.env.*
+!.env.example
+!env.example
+
+# IDE and Editor
+.idea
+.vscode
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+!README.md
+docs/
+training/
+
+# Testing
+coverage/
+.nyc_output/
+*.test.js
+*.spec.js
+__tests__/
+tests/
+
+# Build artifacts
+dist/
+build/
+*.tgz
+
+# Logs (will be mounted as volume)
+logs/
+*.log
+
+# Uploads (will be mounted as volume)
+uploads/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Docker files (don't copy into image)
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# Development
+nodemon.json
+.eslintrc*
+.prettierrc*
+.editorconfig
+
+# Postman
+*.postman_collection.json
+
+# Local scripts
+scripts/create*.js
+scripts/seed*.js
+
+# Other
+*.pid
+*.seed

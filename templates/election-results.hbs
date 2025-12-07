@@ -1,0 +1,23 @@
+{{! Use with layout by wrapping HTML in layout and replacing {{{body}}} }}
+<h2>{{election.title}} - Results</h2>
+<p>Status: {{#if is_final}}Final{{else}}Live{{/if}} • {{timestamp}}</p>
+
+{{#each results}}
+    <h3>{{this.position.title}}</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Candidate</th>
+                <th>Votes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each this.candidates}}
+                <tr>
+                    <td>{{this.name}}</td>
+                    <td>{{this.vote_count}}</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+{{/each}}

@@ -1,0 +1,14 @@
+<h2>Hello {{voter.first_name}} {{voter.last_name}},</h2>
+<p>You are eligible to vote in the upcoming election at {{school.name}}.</p>
+
+<h3>Candidates</h3>
+{{#each positions}}
+    <h4>{{this.title}}</h4>
+    <ul>
+        {{#each this.candidates}}
+            <li>{{this.name}} {{#if this.campaign_slogan}}— "{{this.campaign_slogan}}"{{/if}}</li>
+        {{/each}}
+    </ul>
+{{/each}}
+
+<p>Your Voter ID Number: <strong>{{voter.voter_id_number}}</strong></p>
