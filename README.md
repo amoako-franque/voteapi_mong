@@ -9,7 +9,7 @@ A comprehensive, secure, and scalable RESTful API for managing elections, voting
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
@@ -21,15 +21,16 @@ A comprehensive, secure, and scalable RESTful API for managing elections, voting
 - [Security Features](#-security-features)
 - [Deployment](#-deployment)
 - [Testing](#-testing)
-- [Monitoring & Logging](#-monitoring--logging)
+- [Monitoring &amp; Logging](#-monitoring--logging)
 - [Contributing](#-contributing)
 - [License](#-license)
 
 ---
 
-## ✨ Features
+## Features
 
-### 🗳️ Election Management
+### Election Management
+
 - **Complete Election Lifecycle**: Setup, registration, voting, and results
 - **Multi-Phase Elections**: Automated phase transitions (Setup → Registration → Campaign → Voting → Results)
 - **Position-Based Voting**: Support for multiple positions per election
@@ -38,7 +39,8 @@ A comprehensive, secure, and scalable RESTful API for managing elections, voting
 - **Real-Time Results**: Live vote counting via WebSocket
 - **Result Export**: CSV/PDF export functionality
 
-### 🎯 Public Poll System
+### Public Poll System
+
 - **Rating Polls**: Rate single items (products, services, restaurants, etc.)
 - **Comparison Polls**: Compare 2-10 options and vote for the best
 - **Public/Private Polls**: Creator-controlled visibility
@@ -46,7 +48,8 @@ A comprehensive, secure, and scalable RESTful API for managing elections, voting
 - **Email Notifications**: Automatic results delivery to registered participants
 - **Statistics**: Vote counts, percentages, and detailed analytics
 
-### 🔐 Security & Authentication
+### Security & Authentication
+
 - **JWT Authentication**: Secure token-based authentication
 - **Role-Based Access Control**: Multiple user roles (Super Admin, Admin, School Admin, Association Admin, Election Officer)
 - **Token Blacklisting**: Secure logout with token revocation
@@ -56,7 +59,8 @@ A comprehensive, secure, and scalable RESTful API for managing elections, voting
 - **Rate Limiting**: Protection against abuse
 - **CSRF Protection**: Cross-site request forgery prevention
 
-### 📊 Analytics & Reporting
+### Analytics & Reporting
+
 - **API Usage Statistics**: Track API usage and performance
 - **Vote Analytics**: Detailed voting statistics and trends
 - **User Behavior Tracking**: Monitor user activity
@@ -64,13 +68,15 @@ A comprehensive, secure, and scalable RESTful API for managing elections, voting
 - **Turnout Analysis**: Voter participation rates
 - **Custom Reports**: Generate custom reports and exports
 
-### 🔔 Notifications
+### Notifications
+
 - **Email Notifications**: Vote confirmations, secret codes, results
 - **Multi-Channel Support**: Email, SMS, and in-app notifications
 - **Scheduled Notifications**: Automated deadline reminders
 - **Template System**: Customizable email templates
 
-### 🚀 Performance & Scalability
+### Performance & Scalability
+
 - **Result Caching**: Fast result retrieval with caching
 - **Redis Integration**: Optional Redis caching for high performance
 - **Background Jobs**: Automated tasks with cron scheduling
@@ -82,6 +88,7 @@ A comprehensive, secure, and scalable RESTful API for managing elections, voting
 ## 🛠️ Tech Stack
 
 ### Core
+
 | Technology | Version | Purpose                 |
 | ---------- | ------- | ----------------------- |
 | Node.js    | 18+     | Runtime environment     |
@@ -90,6 +97,7 @@ A comprehensive, secure, and scalable RESTful API for managing elections, voting
 | Redis      | 5.9     | Caching (optional)      |
 
 ### Security
+
 - **bcryptjs** - Password hashing
 - **helmet** - Security headers
 - **express-rate-limit** - Rate limiting
@@ -98,23 +106,26 @@ A comprehensive, secure, and scalable RESTful API for managing elections, voting
 - **express-mongo-sanitize** - NoSQL injection prevention
 
 ### Real-Time & Communication
+
 - **Socket.io 4.8** - WebSocket support
 - **nodemailer** - Email delivery
 - **Twilio** - SMS notifications
 
 ### File Handling
+
 - **multer** - File uploads
 - **sharp** - Image processing
 - **AWS S3 / Cloudinary** - Cloud storage
 
 ### Monitoring
+
 - **Sentry** - Error tracking
 - **Winston / Pino** - Logging
 - **Swagger** - API documentation
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ### System Overview
 
@@ -269,6 +280,7 @@ Poll ────> PollVotes
 ### Data Flow
 
 **Authentication Flow:**
+
 ```
 Client → POST /api/auth/login
     → Auth Controller
@@ -280,6 +292,7 @@ Client → POST /api/auth/login
 ```
 
 **Voting Flow:**
+
 ```
 Client → POST /api/votes
     → Auth Middleware (verify token)
@@ -295,7 +308,7 @@ Client → POST /api/votes
 
 ---
 
-## 📦 Prerequisites
+## Prerequisites
 
 - **Node.js** 18.0 or higher
 - **MongoDB** 6.0 or higher (local or Atlas)
@@ -303,6 +316,7 @@ Client → POST /api/votes
 - **Redis** (optional, for caching)
 
 ### Optional Services
+
 - **AWS S3** account (for file storage)
 - **Cloudinary** account (for image hosting)
 - **Sentry** account (for error tracking)
@@ -310,7 +324,7 @@ Client → POST /api/votes
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ### 1. Clone the Repository
 
@@ -347,7 +361,7 @@ The server starts on `http://localhost:57788`
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### Essential Environment Variables
 
@@ -399,7 +413,7 @@ See `env.example` for all available configuration options.
 
 ---
 
-## 📚 API Documentation
+## API Documentation
 
 ### Base URL
 
@@ -422,6 +436,7 @@ Authorization: Bearer <access_token>
 ### API Endpoints
 
 #### Authentication (`/api/auth`)
+
 | Method | Endpoint           | Description            |
 | ------ | ------------------ | ---------------------- |
 | POST   | `/register`        | Register new user      |
@@ -432,6 +447,7 @@ Authorization: Bearer <access_token>
 | POST   | `/password/reset`  | Reset password         |
 
 #### Elections (`/api/elections`)
+
 | Method | Endpoint             | Description            |
 | ------ | -------------------- | ---------------------- |
 | GET    | `/`                  | List elections         |
@@ -445,6 +461,7 @@ Authorization: Bearer <access_token>
 | POST   | `/:id/close-voting`  | Close voting           |
 
 #### Voting (`/api/votes`)
+
 | Method | Endpoint      | Description          |
 | ------ | ------------- | -------------------- |
 | POST   | `/`           | Cast a vote          |
@@ -454,6 +471,7 @@ Authorization: Bearer <access_token>
 | POST   | `/:id/verify` | Verify vote          |
 
 #### Results (`/api/results`)
+
 | Method | Endpoint        | Description              |
 | ------ | --------------- | ------------------------ |
 | GET    | `/election/:id` | Get election results     |
@@ -462,6 +480,7 @@ Authorization: Bearer <access_token>
 | GET    | `/export`       | Export results (CSV/PDF) |
 
 #### Polls (`/api/polls`)
+
 | Method | Endpoint       | Description       |
 | ------ | -------------- | ----------------- |
 | GET    | `/`            | List public polls |
@@ -474,6 +493,7 @@ Authorization: Bearer <access_token>
 | GET    | `/my-polls`    | Get user's polls  |
 
 #### Users (`/api/users`)
+
 | Method | Endpoint                       | Description                  |
 | ------ | ------------------------------ | ---------------------------- |
 | GET    | `/me`                          | Get current user profile     |
@@ -487,6 +507,7 @@ Authorization: Bearer <access_token>
 | PUT    | `/:id`                         | Update user (Admin)          |
 
 #### Admin (`/api/admin`)
+
 | Method | Endpoint              | Description       |
 | ------ | --------------------- | ----------------- |
 | GET    | `/dashboard`          | Admin dashboard   |
@@ -497,6 +518,7 @@ Authorization: Bearer <access_token>
 | POST   | `/users/:id/activate` | Activate user     |
 
 #### Analytics (`/api/analytics`)
+
 | Method | Endpoint                | Description               |
 | ------ | ----------------------- | ------------------------- |
 | GET    | `/admin/dashboard`      | Admin analytics dashboard |
@@ -508,6 +530,7 @@ Authorization: Bearer <access_token>
 | GET    | `/user/my-polls`        | User poll analytics       |
 
 #### Notifications (`/api/notifications`)
+
 | Method | Endpoint        | Description                 |
 | ------ | --------------- | --------------------------- |
 | GET    | `/`             | Get notifications           |
@@ -517,6 +540,7 @@ Authorization: Bearer <access_token>
 | POST   | `/`             | Create notification (Admin) |
 
 #### Bulk Operations (`/api/bulk`)
+
 | Method | Endpoint         | Description             |
 | ------ | ---------------- | ----------------------- |
 | POST   | `/voters`        | Bulk register voters    |
@@ -525,6 +549,7 @@ Authorization: Bearer <access_token>
 | POST   | `/users/status`  | Bulk update user status |
 
 #### Export (`/api/export`)
+
 | Method | Endpoint      | Description          |
 | ------ | ------------- | -------------------- |
 | GET    | `/elections`  | Export elections     |
@@ -539,39 +564,41 @@ Import `docs/voteapi.postman_collection.json` into Postman for API testing.
 
 ---
 
-## 🔒 Security Features
+## Security Features
 
 ### Security Layers
 
 1. **Network Security**
+
    - HTTPS/TLS encryption
    - CORS configuration
    - Security headers (Helmet)
-
 2. **Authentication & Authorization**
+
    - JWT token-based authentication
    - Role-based access control (RBAC)
    - Token blacklisting
    - Session management
-
 3. **Input Validation**
+
    - express-validator
    - Input sanitization
    - XSS protection
    - NoSQL injection prevention
-
 4. **Data Protection**
+
    - Password hashing (bcrypt)
    - Vote encryption (AES-256-GCM)
    - Secret code hashing
    - Sensitive data redaction in logs
-
 5. **Rate Limiting**
+
    - Global rate limiting (IP-based)
    - Per-user rate limiting
    - Endpoint-specific limits
 
 ### Vote Security
+
 - **Secret Code System**: Unique codes for voter authentication
 - **Vote Encryption**: End-to-end encryption
 - **Duplicate Prevention**: One vote per voter per position
@@ -580,9 +607,9 @@ Import `docs/voteapi.postman_collection.json` into Postman for API testing.
 
 ---
 
-## 🚢 Deployment
+## Deployment
 
-### 🐳 Docker Deployment
+### Docker Deployment
 
 #### Quick Start
 
@@ -648,7 +675,7 @@ See `docker/README.md` for detailed Docker documentation.
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Manual Testing
 
@@ -674,7 +701,7 @@ node scripts/seedData.js
 
 ---
 
-## 📊 Monitoring & Logging
+## Monitoring & Logging
 
 ### Logging
 
@@ -686,6 +713,7 @@ node scripts/seedData.js
 ### Error Tracking
 
 Sentry integration provides:
+
 - Real-time error tracking
 - Performance monitoring
 - Release tracking
@@ -701,7 +729,7 @@ Returns server health status, uptime, and system information.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -719,13 +747,13 @@ Returns server health status, uptime, and system information.
 
 ---
 
-## 📝 License
+## License
 
 This project is licensed under the ISC License.
 
 ---
 
-## 🆘 Support
+## Support
 
 - Open an issue on GitHub
 - Check the documentation
@@ -733,7 +761,7 @@ This project is licensed under the ISC License.
 
 ---
 
-## 📈 Roadmap
+## Roadmap
 
 - [ ] Multi-language support
 - [ ] Advanced analytics dashboard
@@ -746,4 +774,4 @@ This project is licensed under the ISC License.
 
 **Built with ❤️ for transparent and secure digital elections**
 
-**Last Updated**: December 2024 | **Version**: 1.0.0
+**Last Updated**: December 2025 | **Version**: 1.0.0
